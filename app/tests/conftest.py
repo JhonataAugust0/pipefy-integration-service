@@ -13,6 +13,7 @@ import os
 from typing import AsyncGenerator
 
 import pytest_asyncio
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
     AsyncSession,
@@ -23,7 +24,9 @@ from sqlalchemy.pool import NullPool
 
 import app.models.cliente  # noqa: F401
 import app.models.processed_event  # noqa: F401
+from app.api.deps import get_session
 from app.db.session import Base
+from app.main import create_app
 
 TEST_DATABASE_URL: str = os.environ.get("TEST_DATABASE_URL")
 
@@ -79,3 +82,28 @@ async def db_session(connection: AsyncConnection) -> AsyncGenerator[AsyncSession
     )
     async with session_factory() as session:
         yield session
+
+
+@pytest_asyncio.fixture()
+async def async_client(
+    db_session: AsyncSession,
+) -> AsyncGenerator[AsyncClient, None]:
+    """
+    Cliente HTTP assíncrono para testes de integração.
+
+    Sobrescreve a dependência get_session do FastAPI para injetar
+    a sessão transacional do fixture db_session. Assim, todas as
+    escritas feitas pelo endpoint são revertidas ao final do teste.
+    """
+    app = create_app()
+
+    async def _override_session() -> AsyncGenerator[AsyncSession, None]:
+        yield db_session
+
+    app.dependency_overrides[get_session] = _override_session
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        yield client
+
+    app.dependency_overrides.clear()
