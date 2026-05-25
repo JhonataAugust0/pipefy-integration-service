@@ -11,8 +11,10 @@ Orquestra o caso de uso US-01 (Criação de Cliente):
 import logging
 import os
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domain.exceptions import EmailJaCadastradoError, PipefyIntegrationError
 from app.integrations.pipefy.client import send_mutation
 from app.integrations.pipefy.mutations import CREATE_CARD_MUTATION
 from app.models.cliente import Cliente
@@ -59,20 +61,39 @@ class ClienteService:
         self._session = session
 
     async def create_cliente(self, payload: ClienteCreate) -> Cliente:
+        """Ponto de entrada do orquestrador (Caso de uso US-01)."""
+        await self._validate_email_uniqueness(payload.cliente_email)
+
+        cliente = await self._persist_initial_cliente(payload)
+
+        card_id = self._create_pipefy_card(cliente)
+
+        cliente.pipefy_card_id = card_id
+
+        logger.info(
+            "Cliente criado com sucesso: id=%s, email=%s, pipefy_card_id=%s",
+            cliente.id,
+            cliente.cliente_email,
+            cliente.pipefy_card_id,
+        )
+
+        return cliente
+
+    async def _validate_email_uniqueness(self, email: str) -> None:
         """
-        Caso de uso: criação de cliente (US-01).
+        Valida estado no banco de dados: lança EmailJaCadastradoError
+        se encontrar duplicata.
+        """
+        email_exists = await self._session.execute(
+            select(Cliente).where(Cliente.cliente_email == email)
+        )
+        if email_exists.scalar_one_or_none():
+            raise EmailJaCadastradoError(email=email)
 
-        Fluxo:
-          1. Cria o registro no banco com status "Aguardando Análise"
-          2. Flush para obter o ID gerado pelo banco
-          3. Monta e envia a mutation createCard ao Pipefy (mock)
-          4. Persiste o pipefy_card_id retornado
-
-        Args:
-            payload: Dados validados pelo schema ClienteCreate.
-
-        Returns:
-            Instância do modelo Cliente com todos os campos preenchidos.
+    async def _persist_initial_cliente(self, payload: ClienteCreate) -> Cliente:
+        """
+        Cria a entidade no banco de dados.
+        Retorna a instância recém-criada com o ID gerado pelo DB.
         """
         cliente = Cliente(
             cliente_nome=payload.cliente_nome,
@@ -81,24 +102,28 @@ class ClienteService:
             valor_patrimonio=payload.valor_patrimonio,
             status="Aguardando Análise",
         )
-
         self._session.add(cliente)
         await self._session.flush()
+        return cliente
 
+    def _create_pipefy_card(self, cliente: Cliente) -> str:
+        """
+        Envia a mutation, trata a resposta HTTP/GraphQL e devolve apenas o card_id.
+        """
         variables = _build_create_card_variables(cliente)
         response = send_mutation(CREATE_CARD_MUTATION, variables)
+
+        if response and response.get("errors"):
+            raise PipefyIntegrationError(
+                message="A API do Pipefy recusou a criação do card.",
+                details=response["errors"],
+            )
 
         card_id = (
             response.get("data", {}).get("createCard", {}).get("card", {}).get("id")
         )
-        if card_id:
-            cliente.pipefy_card_id = card_id
 
-        logger.info(
-            "Cliente criado: id=%s, email=%s, pipefy_card_id=%s",
-            cliente.id,
-            cliente.cliente_email,
-            cliente.pipefy_card_id,
-        )
+        if not card_id:
+            raise PipefyIntegrationError(message="Card ID não retornado pelo Pipefy.")
 
-        return cliente
+        return card_id
