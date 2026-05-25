@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.services.cliente_service import ClienteService
+from app.services.webhook_service import WebhookService
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
@@ -33,7 +34,17 @@ async def get_cliente_service(
     """
     Factory de dependência para o ClienteService.
 
-    O FastAPI resolve a cadeia: get_session → session → ClienteService.
+    O FastAPI resolve: get_session → session → ClienteService.
     O router recebe o service pronto, sem saber como ele foi construído.
     """
     return ClienteService(session=session)
+
+
+async def get_webhook_service(
+    session: AsyncSession = Depends(get_session),
+) -> WebhookService:
+    """
+    Factory de dependência para o WebhookService.
+    O FastAPI resolve: get_session → session → WebhookService.
+    """
+    return WebhookService(session=session)
