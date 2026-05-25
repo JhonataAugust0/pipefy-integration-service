@@ -23,7 +23,7 @@ from sqlalchemy.pool import NullPool
 
 import app.models.cliente  # noqa: F401
 import app.models.processed_event  # noqa: F401
-from app.db.base import Base
+from app.db.session import Base
 
 TEST_DATABASE_URL: str = os.environ.get("TEST_DATABASE_URL")
 
