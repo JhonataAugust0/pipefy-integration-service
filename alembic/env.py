@@ -2,12 +2,12 @@ import asyncio
 import os
 from logging.config import fileConfig
 
-from app.db.base import Base
 from sqlalchemy.ext.asyncio import create_async_engine
 
 import app.models.cliente  # noqa: F401
 import app.models.processed_event  # noqa: F401
 from alembic import context
+from app.db.session import Base
 
 config = context.config
 fileConfig(config.config_file_name)
