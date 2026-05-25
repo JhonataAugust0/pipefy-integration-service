@@ -8,6 +8,15 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [Unreleased]
 
 ### Adicionado (Added) 23-05-2026
+
+- **Modelagem de Dados (ORM):** Criação dos modelos SQLAlchemy assíncronos para `Cliente` e `ProcessedEvent` (garantia de idempotência de webhooks).
+- **Gerenciamento de Migrações:** Configuração do Alembic integrado ao SQLAlchemy Asyncio para versionamento da base de dados PostgreSQL.
+- **Primeira Migração:** Geração do schema inicial (tabelas `clientes` e `processed_events`).
+- **Infraestrutura de Testes:** Configuração do Pytest com suporte a fixtures assíncronas (`pytest-asyncio`) e injeção de banco de dados real para testes de integração.
+
+## [Unreleased]
+
+### Adicionado (Added) 23-05-2026
 - Configuração do **Ruff** como linter e formatador estático padrão do projeto no arquivo `pyproject.toml`.
 - Configuração de espaço de trabalho do VS Code (`.vscode/settings.json`) para automatizar a formatação e correção de erros ao salvar arquivos Python.
 - Gancho de pré-commit (`.pre-commit-config.yaml`) para validar o estilo e a qualidade do código automaticamente antes de cada commit.
