@@ -8,6 +8,13 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [Unreleased]
 
 ### Adicionado (Added) 23-05-2026
+- Configuração do **Ruff** como linter e formatador estático padrão do projeto no arquivo `pyproject.toml`.
+- Configuração de espaço de trabalho do VS Code (`.vscode/settings.json`) para automatizar a formatação e correção de erros ao salvar arquivos Python.
+- Gancho de pré-commit (`.pre-commit-config.yaml`) para validar o estilo e a qualidade do código automaticamente antes de cada commit.
+
+## [Unreleased]
+
+### Adicionado (Added) 23-05-2026
 - **Infraestrutura Docker:** Configuração inicial da infraestrutura de containers (`docker-compose.yml` e `Dockerfile`), garantindo paridade entre desenvolvimento e o futuro ambiente de produção.
 - **Rede Isolada:** Implementação de rede nomeada (`backend_network`) no Docker Compose para isolamento de tráfego do banco de dados e aplicação do princípio do privilégio mínimo.
 - **Banco de Dados Local:** Configuração do PostgreSQL 16 (Alpine) com volumes persistentes para desenvolvimento e instâncias `tmpfs` efêmeras para execução isolada de testes automatizados.
