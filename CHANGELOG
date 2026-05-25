@@ -9,6 +9,11 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ### Adicionado (Added) 23-05-2026
 
+- **Integração Pipefy (Mock):** Implementação de um cliente GraphQL simulado (`pipefy_client.py`) utilizando o padrão *Registry*, garantindo isolamento da infraestrutura externa durante o desenvolvimento local.
+- **Contratos GraphQL Otimizados:** Mapeamento rigoroso das mutations `createCard` e `updateCardField`. Aplicação de melhores práticas de GraphQL (remoção de *Over-fetching* no retorno do card e uso de *Aliasing* para atualizações múltiplas em uma única requisição HTTP).
+
+### Adicionado (Added) 23-05-2026
+
 - **Modelagem de Dados (ORM):** Criação dos modelos SQLAlchemy assíncronos para `Cliente` e `ProcessedEvent` (garantia de idempotência de webhooks).
 - **Gerenciamento de Migrações:** Configuração do Alembic integrado ao SQLAlchemy Asyncio para versionamento da base de dados PostgreSQL.
 - **Primeira Migração:** Geração do schema inicial (tabelas `clientes` e `processed_events`).
