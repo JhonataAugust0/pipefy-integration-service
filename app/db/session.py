@@ -15,6 +15,7 @@ engine = create_async_engine(
     pool_pre_ping=True,
 )
 
+
 class Base(DeclarativeBase):
     """
     Base declarativa compartilhada por todos os modelos SQLAlchemy.
@@ -29,6 +30,7 @@ AsyncSessionLocal: async_sessionmaker[AsyncSession] = async_sessionmaker(
     expire_on_commit=False,
     class_=AsyncSession,
 )
+
 
 async def get_db() -> AsyncSession:
     """
