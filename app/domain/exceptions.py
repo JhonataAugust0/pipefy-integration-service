@@ -2,9 +2,10 @@
 Exceções de Domínio
 
 Exceções de negócio sem dependência de frameworks HTTP.
-Os routers (ou exception_handlers globais) as convertem em respostas 
+Os routers (ou exception_handlers globais) as convertem em respostas
 HTTP adequadas (ex: 404, 409, 502).
 """
+
 
 class ClienteNaoEncontradoError(Exception):
     """
@@ -13,6 +14,7 @@ class ClienteNaoEncontradoError(Exception):
 
     O router captura esta exceção e retorna HTTP 404.
     """
+
     def __init__(self, email: str) -> None:
         self.email = email
         super().__init__(f"Cliente com e-mail '{email}' não encontrado.")
@@ -25,6 +27,7 @@ class EmailJaCadastradoError(Exception):
 
     O router captura esta exceção e retorna HTTP 409.
     """
+
     def __init__(self, email: str) -> None:
         self.email = email
         super().__init__(f"O e-mail '{email}' já está em uso por outro cliente.")
@@ -37,6 +40,7 @@ class PipefyIntegrationError(Exception):
 
     O router captura esta exceção e retorna HTTP 502.
     """
+
     def __init__(self, message: str, details: list | dict | None = None) -> None:
         self.details = details
         super().__init__(f"Falha na integração com o Pipefy: {message}")
