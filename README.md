@@ -508,17 +508,41 @@ O desafio é decomposto em cinco etapas sequenciais. Cada etapa produz código f
 - Docker e Docker Compose instalados.
 - Arquivo `.env` na raiz (copiar de `.env.example`).
 
-### Subir a aplicação
+### Subir a aplicação (Com Docker)
 
 ```bash
 # Clonar o repositório
 git clone https://github.com/JhonataAugust0/pipefy-integration-service.git && cd pipefy-integration-service
+
+# Copiar variáveis de ambiente
+cp env.example .env
 
 # Subir banco e API
 docker-compose up --build
 
 # Em outro terminal: rodar migrações
 docker-compose exec api alembic upgrade head
+```
+
+### Subir a aplicação (Sem Docker / Virtualenv)
+
+```bash
+# 1. Subir apenas os bancos de dados (desenvolvimento e teste)
+docker-compose up db-dev db-test -d
+
+# 2. Criar e ativar o ambiente virtual
+python -m venv .venv
+source .venv/bin/activate  # No Windows: .venv\Scripts\activate
+
+# 3. Instalar dependências
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+# 4. Rodar as migrações no banco local
+env DATABASE_URL=postgresql+asyncpg://mundoinvest:mundoinvest@localhost:5432/mundoinvest alembic upgrade head
+
+# 5. Iniciar o servidor de desenvolvimento
+env DATABASE_URL=postgresql+asyncpg://mundoinvest:mundoinvest@localhost:5432/mundoinvest uvicorn app.main:app --reload --port 8000
 ```
 
 A API estará disponível em `http://localhost:8000`.  
@@ -532,7 +556,7 @@ docker-compose up db-test -d
 
 # Instalar dependências de dev e rodar testes (aponta para PostgreSQL real)
 pip install -r requirements-dev.txt
-TEST_DATABASE_URL=postgresql+asyncpg://mundoinvest_test:mundoinvest_test@localhost:5433/mundoinvest_test pytest -v
+env TEST_DATABASE_URL=postgresql+asyncpg://mundoinvest_test:mundoinvest_test@localhost:5433/mundoinvest_test pytest -v
 
 # Ou inteiramente dentro do container (banco já disponível via Docker Compose)
 docker-compose exec api pytest -v
