@@ -19,7 +19,7 @@ class WebhookPayload(BaseModel):
 
     event_id: str = Field(
         ...,
-        description="Identificador único do evento. Usado para controle" \
+        description="Identificador único do evento. Usado para controle"
         "de idempotência.",
         examples=["evt_123"],
     )
