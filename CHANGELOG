@@ -7,9 +7,18 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
-### Adicionado (Added) 25-05-2026
+### Corrigido (Fixed) 26-05-2026
 
-- **Cobertura de Testes (Test Suite):** Implementação e refatoração completa da suíte de testes (54 testes totais), cobrindo a camada HTTP (endpoints `POST /clientes` e `POST /webhooks/pipefy/card-updated`), mapeamentos de contratos GraphQL e handlers de exceção globais. Garantia de isolamento transacional por teste via injeção de `AsyncSession` no Pytest.
+- **SonarQube S8409 (BLOCKER):** Removido parâmetro `response_model` redundante nos routers `clientes.py` e `webhooks.py` — a anotação de retorno (`-> ClienteResponse`, `-> WebhookResponse`) já é suficiente para o FastAPI inferir o modelo de resposta.
+- **SonarQube S8410 (BLOCKER):** Migração de injeção de dependência nos routers (`clientes.py`, `webhooks.py`, `system.py`) do padrão `= Depends()` para `Annotated` type hints (PEP 593), conforme recomendação do FastAPI >= 0.95. Criados type aliases reutilizáveis (`SessionDep`, `ClienteServiceDep`, `WebhookServiceDep`) em `deps.py`.
+- **SonarQube S7503 (MINOR):** Removida keyword `async` das factories `get_cliente_service` e `get_webhook_service` em `deps.py` — funções que apenas instanciam classes não precisam ser coroutines.
+- **SonarQube S5886 (MAJOR):** Corrigido tipo de retorno de `get_db()` em `session.py` de `AsyncSession` para `AsyncGenerator[AsyncSession, None]`, compatível com o `yield` utilizado internamente.
+- **SonarQube S1192 (CRITICAL):** Extraído literal `"now()"` duplicado 3 vezes na migration `0001_initial_schema.py` para constante `SERVER_NOW`.
+- **SonarQube S1244 (MAJOR):** Substituída comparação direta de float (`== 250000.00`) por `pytest.approx()` em `test_clientes.py` para evitar falsos negativos por imprecisão de ponto flutuante.
+
+### Refatorado (Refactored) 26-05-2026
+
+- **Pipefy Client Async:** Refatoração de `send_mutation()` em `client.py` de síncrono para `async def`. Em produção esta função fará HTTP POST via `httpx.AsyncClient` para a API GraphQL do Pipefy — sem `async`, bloquearia o event loop do FastAPI. A mudança propagou para `_create_pipefy_card()` no `ClienteService` e `_process_new_event()` no `WebhookService`, bem como para os testes unitários do client mock (`test_pipefy_client.py`).
 
 ### Adicionado (Added) 25-05-2026
 
