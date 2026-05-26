@@ -1,7 +1,10 @@
 # Mundo Invest — Backend Challenge: Pipefy Integration Service
 
-> **Stack:** Python 3.14 · FastAPI · SQLAlchemy · PostgreSQL · Pytest · Docker
-
+> **Stack:** Python 3.14 · FastAPI · SQLAlchemy · PostgreSQL · Pytest · Docker   
+>![Quality Gate](assets/quality_gate.svg) 
+![Maintainability A](assets/maintainability.svg)
+![Security Rating A](assets/security_rating.svg)
+![Duplicated Lines](assets/duplicated_lines.svg)
 ---
 
 ## Sumário
@@ -170,31 +173,34 @@ app/
 ├── api/                   # Camada de Transporte (FastAPI Routers)
 │   ├── v1/
 │   │   ├── clientes.py    # POST /clientes
+|   |   ├── system.py      # GET /health
 │   │   └── webhooks.py    # POST /webhooks/pipefy/card-updated
-│   └── deps.py            # Injeção de dependências (DB session)
-│
-├── services/              # Camada de Aplicação (Casos de Uso)
-│   ├── cliente_service.py # Orquestra validação, persistência e chamada ao Pipefy client
-│   └── webhook_service.py # Orquestra idempotência, regra de prioridade e update
-│
+|   ├── deps.py            # Injeção de dependências
+│   └── error_handler.py   # Handler global de exceções
+|
+├── db/
+│   └── session.py         # Engine e SessionLocal
+|
 ├── domain/                # Regras de Negócio Puras
-│   └── priority.py        # Função: calcular_prioridade(valor_patrimonio) → str
-│
+|   ├── exceptions.py      # Exceções de Domínio
+│   └── priority.py        # Função: calculate_priority(asset_value: float) → str
+|
 ├── integrations/          # Adapters Externos (Ports)
 │   └── pipefy/
 │       ├── client.py      # Simulação do cliente GraphQL (mock/stub)
 │       └── mutations.py   # Strings das mutations GraphQL (createCard, updateCardField)
 │
 ├── models/                # Modelos SQLAlchemy (ORM)
-│   ├── cliente.py             # inclui pipefy_card_id: Optional[str] — ver Limitações
-│   └── processed_event.py # Tabela de idempotência
+│   ├── cliente.py         # Tabela de registro de clientes
+│   └── processed_event.py # Tabela de processamento de eventos
 │
 ├── schemas/               # Modelos Pydantic (I/O da API)
 │   ├── cliente.py
 │   └── webhook.py
-│
-├── db/
-│   └── session.py         # Engine e SessionLocal
+|
+├── services/              # Camada de Aplicação (Casos de Uso)
+│   ├── cliente_service.py # Orquestra validação, persistência e chamada ao Pipefy client
+│   └── webhook_service.py # Orquestra idempotência, regra de prioridade e update
 │
 └── main.py                # Instância FastAPI, inclusão de routers
 ```
