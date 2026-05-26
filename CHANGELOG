@@ -5,6 +5,12 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato baseia-se no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.0.1] - 2026-05-26
+
+### Corrigido (Fixed) 26-05-2026
+
+- **App Database Session:** Substituído acesso direto ao `DATABASE_URL` via `os.environ[]` por `os.getenv("DATABASE_URL", "<default>")` em `app/db/session.py`. Isso corrige o erro crítico de coleção nos testes (`KeyError`) ao executar os testes localmente fora do container do docker.
+
 ## [1.0.0] - 2026-05-26
 
 ### Corrigido (Fixed) 26-05-2026
