@@ -9,6 +9,10 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ### Adicionado (Added) 25-05-2026
 
+- **Cobertura de Testes (Test Suite):** Implementação e refatoração completa da suíte de testes (54 testes totais), cobrindo a camada HTTP (endpoints `POST /clientes` e `POST /webhooks/pipefy/card-updated`), mapeamentos de contratos GraphQL e handlers de exceção globais. Garantia de isolamento transacional por teste via injeção de `AsyncSession` no Pytest.
+
+### Adicionado (Added) 25-05-2026
+
 - **Endpoints Principais:** Criação da rota `POST /clientes` para registro de novos clientes e inicialização do fluxo, e de um endpoint `GET /health` (Deep Health Check) blindado para testes de conectividade com o banco de dados (`system.py`).
 - **Processamento de Webhooks:** Implementação da rota `POST /webhooks/pipefy/card-updated` com injeção de dependências nativa do FastAPI e controle transacional.
 - **Orquestração e Regras de Negócio:** Criação do `WebhookService` para garantir idempotência no banco de dados e do módulo `priority.py` para isolar a lógica de domínio (cálculo de prioridade baseado no valor do patrimônio).
