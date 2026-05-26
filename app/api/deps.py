@@ -56,6 +56,6 @@ def get_webhook_service(
 
 
 # Type aliases reutilizáveis pelos routers
-SessionDep:        TypeAlias = Annotated[AsyncSession, Depends(get_session)]
+SessionDep: TypeAlias = Annotated[AsyncSession, Depends(get_session)]
 ClienteServiceDep: TypeAlias = Annotated[ClienteService, Depends(get_cliente_service)]
 WebhookServiceDep: TypeAlias = Annotated[WebhookService, Depends(get_webhook_service)]
