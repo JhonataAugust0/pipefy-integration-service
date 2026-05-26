@@ -5,7 +5,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato baseia-se no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
-## [Unreleased]
+## [1.0.0] - 2026-05-26
 
 ### Corrigido (Fixed) 26-05-2026
 
@@ -33,7 +33,6 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - **SRP em Serviços de Cliente:** Fatiamento do método principal no `cliente_service.py`, aplicando o Princípio da Responsabilidade Única (SRP). Delegação de responsabilidades de banco de dados e chamadas externas para métodos privados, melhorando a testabilidade e leitura do código.
 - **Qualidade de Código:** Padronização da formatação nos arquivos de domínio e serviços utilizando a ferramenta `ruff`.
 
-## [Unreleased]
 
 ### Adicionado (Added) 25-05-2026
 
@@ -47,14 +46,12 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - **Primeira Migração:** Geração do schema inicial (tabelas `clientes` e `processed_events`).
 - **Infraestrutura de Testes:** Configuração do Pytest com suporte a fixtures assíncronas (`pytest-asyncio`) e injeção de banco de dados real para testes de integração.
 
-## [Unreleased]
 
 ### Adicionado (Added) 25-05-2026
 - Configuração do **Ruff** como linter e formatador estático padrão do projeto no arquivo `pyproject.toml`.
 - Configuração de espaço de trabalho do VS Code (`.vscode/settings.json`) para automatizar a formatação e correção de erros ao salvar arquivos Python.
 - Gancho de pré-commit (`.pre-commit-config.yaml`) para validar o estilo e a qualidade do código automaticamente antes de cada commit.
 
-## [Unreleased]
 
 ### Adicionado (Added) 23-05-2026
 - **Infraestrutura Docker:** Configuração inicial da infraestrutura de containers (`docker-compose.yml` e `Dockerfile`), garantindo paridade entre desenvolvimento e o futuro ambiente de produção.
