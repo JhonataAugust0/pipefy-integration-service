@@ -8,11 +8,10 @@ service injetado via Depends().
 
 import logging
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, status
 
-from app.api.deps import get_cliente_service
+from app.api.deps import ClienteServiceDep
 from app.schemas.cliente import ClienteCreate, ClienteResponse
-from app.services.cliente_service import ClienteService
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +20,6 @@ router = APIRouter()
 
 @router.post(
     "",
-    response_model=ClienteResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Cadastra novo cliente",
     description=(
@@ -32,7 +30,7 @@ router = APIRouter()
 )
 async def post_clientes(
     payload: ClienteCreate,
-    service: ClienteService = Depends(get_cliente_service),
+    service: ClienteServiceDep,
 ) -> ClienteResponse:
     """
     Endpoint RF-01 / RF-02 / RF-03 / RF-04.

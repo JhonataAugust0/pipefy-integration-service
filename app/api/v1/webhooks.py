@@ -6,11 +6,10 @@ Camada de transporte HTTP para eventos recebidos do Pipefy.
 
 import logging
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, status
 
-from app.api.deps import get_webhook_service
+from app.api.deps import WebhookServiceDep
 from app.schemas.webhook import WebhookPayload, WebhookResponse
-from app.services.webhook_service import WebhookService
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +18,6 @@ router = APIRouter()
 
 @router.post(
     "/pipefy/card-updated",
-    response_model=WebhookResponse,
     status_code=status.HTTP_200_OK,
     summary="Recebe notificação de card atualizado do Pipefy",
     description=(
@@ -30,7 +28,7 @@ router = APIRouter()
 )
 async def post_card_updated(
     payload: WebhookPayload,
-    service: WebhookService = Depends(get_webhook_service),
+    service: WebhookServiceDep,
 ) -> WebhookResponse:
     """
     Endpoint RF-05 / RF-06 / RF-07 / RF-08 / RF-09 / RF-10.

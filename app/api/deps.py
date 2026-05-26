@@ -6,9 +6,14 @@ O FastAPI injeta estas dependências via `Depends()` em cada rota.
 
 Nenhum router importa diretamente de db/ ou services/, todas as
 dependências passam por este módulo.
+
+Tipo Annotated (PEP 593):
+  FastAPI >= 0.95 recomenda Annotated em vez de valores default
+  com Depends(). Isso separa tipo de metadado de DI, melhora
+  a legibilidade e evita conflitos com linters estáticos.
 """
 
-from typing import AsyncGenerator
+from typing import Annotated, AsyncGenerator, TypeAlias
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,8 +33,8 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
-async def get_cliente_service(
-    session: AsyncSession = Depends(get_session),
+def get_cliente_service(
+    session: Annotated[AsyncSession, Depends(get_session)],
 ) -> ClienteService:
     """
     Factory de dependência para o ClienteService.
@@ -40,11 +45,17 @@ async def get_cliente_service(
     return ClienteService(session=session)
 
 
-async def get_webhook_service(
-    session: AsyncSession = Depends(get_session),
+def get_webhook_service(
+    session: Annotated[AsyncSession, Depends(get_session)],
 ) -> WebhookService:
     """
     Factory de dependência para o WebhookService.
     O FastAPI resolve: get_session → session → WebhookService.
     """
     return WebhookService(session=session)
+
+
+# Type aliases reutilizáveis pelos routers
+SessionDep:        TypeAlias = Annotated[AsyncSession, Depends(get_session)]
+ClienteServiceDep: TypeAlias = Annotated[ClienteService, Depends(get_cliente_service)]
+WebhookServiceDep: TypeAlias = Annotated[WebhookService, Depends(get_webhook_service)]

@@ -1,4 +1,5 @@
 import os
+from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -32,7 +33,7 @@ AsyncSessionLocal: async_sessionmaker[AsyncSession] = async_sessionmaker(
 )
 
 
-async def get_db() -> AsyncSession:
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency FastAPI. Gerencia ciclo de vida da sessão por request:
     abre, injeta na rota, faz commit ou rollback e fecha.

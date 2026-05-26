@@ -62,7 +62,7 @@ class TestCriacaoClienteValido:
 
         assert cliente.status == "Aguardando Análise"
         assert cliente.cliente_nome == "João Silva"
-        assert cliente.valor_patrimonio == 250000.00
+        assert cliente.valor_patrimonio == pytest.approx(250000.00)
         assert cliente.pipefy_card_id is not None
 
 

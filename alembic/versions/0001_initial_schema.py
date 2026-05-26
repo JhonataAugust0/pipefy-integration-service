@@ -8,6 +8,9 @@ import sqlalchemy as sa
 
 from alembic import op
 
+# Constante para evitar duplicação do literal 'now()' (SonarQube S1192)
+SERVER_NOW = sa.text("now()")
+
 revision = "0001"
 down_revision = None
 branch_labels = None
@@ -38,13 +41,13 @@ def upgrade() -> None:
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
+            server_default=SERVER_NOW,
             nullable=False,
         ),
         sa.Column(
             "updated_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
+            server_default=SERVER_NOW,
             nullable=False,
         ),
         sa.PrimaryKeyConstraint("id"),
@@ -65,7 +68,7 @@ def upgrade() -> None:
         sa.Column(
             "processed_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
+            server_default=SERVER_NOW,
             nullable=False,
         ),
         sa.PrimaryKeyConstraint("id"),
