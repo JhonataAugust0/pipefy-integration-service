@@ -8,6 +8,8 @@ real do sistema — não há asserts de substring avulsos.
 
 import logging
 
+import pytest
+
 from app.integrations.pipefy.client import send_mutation
 from app.integrations.pipefy.mutations import (
     CREATE_CARD_MUTATION,
@@ -37,7 +39,8 @@ class TestCreateCardMutationContract:
                 f"Campo '{required_field}' ausente na mutation createCard"
             )
 
-    def test_create_card_variables_contain_name_email_patrimonio(self):
+    @pytest.mark.asyncio
+    async def test_create_card_variables_contain_name_email_patrimonio(self):
         """
         Critério de aceite da Etapa 2: as variáveis montadas pelo service
         devem conter name (title), email e patrimônio no formato de array
@@ -62,7 +65,7 @@ class TestCreateCardMutationContract:
         assert "email" in field_ids
         assert "patrimonio" in field_ids
 
-        response = send_mutation(CREATE_CARD_MUTATION, variables)
+        response = await send_mutation(CREATE_CARD_MUTATION, variables)
         card = response["data"]["createCard"]["card"]
         assert card["id"] is not None
         assert card["title"] == "João Silva"
@@ -103,7 +106,8 @@ class TestUpdateCardFieldMutationContract:
 class TestSendMutation:
     """Valida o dispatch e o contrato de resposta do client mock."""
 
-    def test_create_card_returns_valid_card_response(self):
+    @pytest.mark.asyncio
+    async def test_create_card_returns_valid_card_response(self):
         """
         send_mutation com createCard deve retornar resposta com a mesma
         estrutura que a API real do Pipefy (data.createCard.card).
@@ -121,14 +125,15 @@ class TestSendMutation:
             }
         }
 
-        response = send_mutation(CREATE_CARD_MUTATION, variables)
+        response = await send_mutation(CREATE_CARD_MUTATION, variables)
 
         card = response["data"]["createCard"]["card"]
         assert card["id"] is not None
         assert card["title"] == "Maria Souza"
         assert card["url"].startswith("https://")
 
-    def test_update_card_field_returns_success_for_both_aliases(self):
+    @pytest.mark.asyncio
+    async def test_update_card_field_returns_success_for_both_aliases(self):
         """
         send_mutation com updateCardField deve retornar success=True
         para ambos os aliases. O webhook_service depende deste contrato
@@ -147,23 +152,25 @@ class TestSendMutation:
             },
         }
 
-        response = send_mutation(UPDATE_CARD_FIELD_MUTATION, variables)
+        response = await send_mutation(UPDATE_CARD_FIELD_MUTATION, variables)
 
         assert response["data"]["updateStatus"]["success"] is True
         assert response["data"]["updatePrioridade"]["success"] is True
 
-    def test_unknown_mutation_returns_error_response(self):
+    @pytest.mark.asyncio
+    async def test_unknown_mutation_returns_error_response(self):
         """
         Mutation não registrada no _MUTATION_HANDLERS deve retornar
         data=None + errors, sinalizando falha para quem consome.
         Protege o fallback do registry pattern.
         """
-        response = send_mutation("mutation { foo { id } }", {})
+        response = await send_mutation("mutation { foo { id } }", {})
 
         assert response["data"] is None
         assert len(response["errors"]) > 0
 
-    def test_logs_payload_on_send(self, caplog):
+    @pytest.mark.asyncio
+    async def test_logs_payload_on_send(self, caplog):
         """
         O client deve logar mutation + variáveis para auditoria.
         Em produção este log seria essencial para debugging de
@@ -172,7 +179,7 @@ class TestSendMutation:
         variables = {"input": {"pipe_id": "99999", "title": "Log Test"}}
 
         with caplog.at_level(logging.INFO, logger="app.integrations.pipefy.client"):
-            send_mutation(CREATE_CARD_MUTATION, variables)
+            await send_mutation(CREATE_CARD_MUTATION, variables)
 
         log_messages = [r.message for r in caplog.records]
         assert any("Mutation enviada" in msg for msg in log_messages)

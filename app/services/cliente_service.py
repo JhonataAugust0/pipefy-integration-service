@@ -66,7 +66,7 @@ class ClienteService:
 
         cliente = await self._persist_initial_cliente(payload)
 
-        card_id = self._create_pipefy_card(cliente)
+        card_id = await self._create_pipefy_card(cliente)
 
         cliente.pipefy_card_id = card_id
 
@@ -106,12 +106,12 @@ class ClienteService:
         await self._session.flush()
         return cliente
 
-    def _create_pipefy_card(self, cliente: Cliente) -> str:
+    async def _create_pipefy_card(self, cliente: Cliente) -> str:
         """
         Envia a mutation, trata a resposta HTTP/GraphQL e devolve apenas o card_id.
         """
         variables = _build_create_card_variables(cliente)
-        response = send_mutation(CREATE_CARD_MUTATION, variables)
+        response = await send_mutation(CREATE_CARD_MUTATION, variables)
 
         if response and response.get("errors"):
             raise PipefyIntegrationError(

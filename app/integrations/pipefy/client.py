@@ -3,7 +3,12 @@ Pipefy GraphQL Client (Mock)
 
 Simulação do cliente GraphQL do Pipefy para desenvolvimento local.
 Em produção, `send_mutation` seria substituído por uma chamada HTTP real
-sem alterar nenhuma outra camada da aplicação (Ports & Adapters).
+(httpx.AsyncClient) sem alterar nenhuma outra camada da aplicação
+(Ports & Adapters).
+
+Refatorado para async: em produção, send_mutation fará I/O de rede
+(HTTP POST para a API GraphQL do Pipefy). Manter a interface async
+desde o mock evita refatorações futuras em toda a cadeia de chamadas.
 """
 
 import logging
@@ -101,12 +106,13 @@ def _mock_update_card_field_response(variables: dict) -> dict:
 # ---------------------------------------------------------------
 
 
-def send_mutation(mutation: str, variables: dict) -> dict:
+async def send_mutation(mutation: str, variables: dict) -> dict:
     """
     Simula o envio de uma mutation GraphQL ao Pipefy.
 
-    Responsabilidade: logar o payload e delegar a geração
-    da resposta ao handler registrado para a mutation recebida.
+    Assinatura async para compatibilidade futura: em produção
+    esta função fará HTTP POST via httpx.AsyncClient para a API
+    GraphQL do Pipefy, operação de I/O que exige await.
 
     Args:
         mutation: String da mutation GraphQL (ex: CREATE_CARD_MUTATION).

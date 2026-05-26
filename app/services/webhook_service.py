@@ -101,7 +101,7 @@ class WebhookService:
 
         # Chamada Externa (GraphQL Mock)
         variables = _build_update_variables(payload.card_id, prioridade)
-        response = send_mutation(UPDATE_CARD_FIELD_MUTATION, variables)
+        response = await send_mutation(UPDATE_CARD_FIELD_MUTATION, variables)
 
         if response and response.get("errors"):
             raise PipefyIntegrationError(
