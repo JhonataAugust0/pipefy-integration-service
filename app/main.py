@@ -1,9 +1,10 @@
 import logging
 
-from fastapi import FastAPI, Request, status
-from fastapi.exceptions import RequestValidationError
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+
+from app.api.error_handlers import setup_exception_handlers
+from app.api.v1 import clientes, system, webhooks
 
 logging.basicConfig(
     level=logging.INFO,
@@ -36,32 +37,10 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # ===================== Exception Handlers Globais =====================
-    @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(
-        request: Request, exc: RequestValidationError
-    ):
-        """
-        Intercepta payloads malformados antes que cheguem na regra de negócio,
-        garantindo log adequado e resposta limpa.
-        """
-        logger.warning(
-            f"Payload malformado rejeitado em {request.url.path}: {exc.errors()}"
-        )
-        return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content={
-                "message": "Contrato de integração violado. Verifique o"
-                "payload enviado.",
-                "errors": exc.errors(),
-            },
-        )
-
-    # ===================== Routers =====================
-    from app.api.v1 import clientes, system
-
+    setup_exception_handlers(app)
     app.include_router(system.router)
     app.include_router(clientes.router, prefix="/clientes", tags=["Clientes"])
+    app.include_router(webhooks.router, prefix="/webhooks", tags=["Webhooks"])
 
     logger.info("Mundo Invest Integration API inicializada com sucesso.")
 
