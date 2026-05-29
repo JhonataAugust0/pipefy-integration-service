@@ -133,6 +133,7 @@ Scenario: Webhook para cliente inexistente
 |---|---|
 | **Python 3.14** | Requisito do desafio (Python ou Golang); ecossistema maduro para integrações com APIs externas e automações. |
 | **FastAPI** | Validação automática via Pydantic, geração de OpenAPI out-of-the-box e performance assíncrona adequada para I/O-bound workloads como chamadas GraphQL. |
+| **Pydantic Settings** | Centraliza a leitura e tipagem de variáveis de ambiente (`.env`), garantindo *fail-fast* no startup da aplicação caso dependências vitais (como `DATABASE_URL`) estejam ausentes. |
 | **SQLAlchemy 2.x** | ORM com suporte nativo a async; desacopla a camada de dados do banco físico, facilitando migrations e testes contra PostgreSQL real via instância dedicada no Docker Compose. |
 | **PostgreSQL (Docker)** | Banco relacional usado tanto em desenvolvimento quanto em testes² (via `db-test`), espelhando o ambiente de produção (RDS) e garantindo que `ON CONFLICT`, constraints e tipos se comportem identicamente em todos os ambientes. |
 | **Alembic** | Migrações versionadas; essencial para rastrear mudanças de schema sem recriar o banco. |
@@ -177,6 +178,9 @@ app/
 │   │   └── webhooks.py    # POST /webhooks/pipefy/card-updated
 |   ├── deps.py            # Injeção de dependências
 │   └── error_handler.py   # Handler global de exceções
+|
+├── core/                  # Configurações Centrais
+│   └── settings.py        # Gerenciamento de variáveis de ambiente
 |
 ├── db/
 │   └── session.py         # Engine e SessionLocal

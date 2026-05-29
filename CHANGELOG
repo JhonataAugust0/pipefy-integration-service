@@ -5,6 +5,17 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato baseia-se no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.0.2] - 2026-05-29
+
+### Adicionado (Added) 29-05-2026
+
+- **Configuração Centralizada:** Implementado gerenciamento de variáveis de ambiente com `pydantic-settings` (`app/core/settings.py`), garantindo validação estrita de tipos, auto-leitura do `.env` e *fail-fast* no startup em caso de variáveis vitais ausentes (ex: `DATABASE_URL`).
+- **Documentação de Ambiente:** Regenerado o `env.example` a partir do schema de configurações `Settings` para evitar divergências e documentar variáveis exclusivas do docker-compose.
+
+### Refatorado (Refactored) 29-05-2026
+
+- **Integração de Settings:** Substituído acesso direto ao `os.environ` por injeção e uso do singleton `get_settings()` nos arquivos `session.py`, `cliente_service.py`, `alembic/env.py`, `conftest.py` e `main.py`.
+
 ## [1.0.1] - 2026-05-26
 
 ### Corrigido (Fixed) 26-05-2026
