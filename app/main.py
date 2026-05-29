@@ -5,12 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.error_handlers import setup_exception_handlers
 from app.api.v1 import clientes, system, webhooks
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger(__name__)
+from app.core.settings import get_settings
 
 
 def create_app() -> FastAPI:
@@ -19,6 +14,14 @@ def create_app() -> FastAPI:
     Facilita testes unitários (permite criar instâncias de teste limpas)
     e injeção de dependências futuras.
     """
+    settings = get_settings()
+
+    logging.basicConfig(
+        level=settings.LOG_LEVEL,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    logger = logging.getLogger(__name__)
+
     app = FastAPI(
         title="Mundo Invest — Pipefy Integration API",
         description="API de orquestração do funil de clientes da Mundo Invest. "
@@ -31,7 +34,7 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=settings.CORS_ORIGINS,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

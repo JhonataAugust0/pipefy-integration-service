@@ -1,5 +1,4 @@
 import asyncio
-import os
 from logging.config import fileConfig
 
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -7,6 +6,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 import app.models.cliente  # noqa: F401
 import app.models.processed_event  # noqa: F401
 from alembic import context
+from app.core.settings import get_settings
 from app.db.session import Base
 
 config = context.config
@@ -16,10 +16,7 @@ target_metadata = Base.metadata
 
 
 def get_url() -> str:
-    return os.environ.get(
-        "DATABASE_URL",
-        config.get_main_option("sqlalchemy.url"),
-    )
+    return get_settings().DATABASE_URL
 
 
 def run_migrations_offline() -> None:

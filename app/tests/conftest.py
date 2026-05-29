@@ -9,7 +9,6 @@ Isso garante isolamento sem recriar tabelas entre testes, mantendo
 a suite rápida mesmo com muitos testes.
 """
 
-import os
 from typing import AsyncGenerator
 
 import pytest_asyncio
@@ -25,10 +24,11 @@ from sqlalchemy.pool import NullPool
 import app.models.cliente  # noqa: F401
 import app.models.processed_event  # noqa: F401
 from app.api.deps import get_session
+from app.core.settings import get_settings
 from app.db.session import Base
 from app.main import create_app
 
-TEST_DATABASE_URL: str = os.environ.get("TEST_DATABASE_URL")
+TEST_DATABASE_URL: str = get_settings().TEST_DATABASE_URL
 
 # NullPool: desativa connection pooling nos testes.
 # Cada operação abre e fecha sua própria conexão — sem estado vazando entre testes.

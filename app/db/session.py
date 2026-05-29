@@ -1,4 +1,3 @@
-import os
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
@@ -8,7 +7,9 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase
 
-DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql+asyncpg://user:pass@localhost:5432/db")
+from app.core.settings import get_settings
+
+DATABASE_URL: str = get_settings().DATABASE_URL
 
 engine = create_async_engine(
     DATABASE_URL,

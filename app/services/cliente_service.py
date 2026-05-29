@@ -9,11 +9,11 @@ Orquestra o caso de uso US-01 (Criação de Cliente):
 """
 
 import logging
-import os
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.settings import get_settings
 from app.domain.exceptions import EmailJaCadastradoError, PipefyIntegrationError
 from app.integrations.pipefy.client import send_mutation
 from app.integrations.pipefy.mutations import CREATE_CARD_MUTATION
@@ -22,8 +22,9 @@ from app.schemas.cliente import ClienteCreate
 
 logger = logging.getLogger(__name__)
 
-PIPEFY_PIPE_ID: str = os.environ.get("PIPEFY_PIPE_ID", "000000")
-PIPEFY_PHASE_ID: str = os.environ.get("PIPEFY_PHASE_ID", "000000")
+_settings = get_settings()
+PIPEFY_PIPE_ID: str = _settings.PIPEFY_PIPE_ID
+PIPEFY_PHASE_ID: str = _settings.PIPEFY_PHASE_ID
 
 
 def _build_create_card_variables(cliente: Cliente) -> dict:

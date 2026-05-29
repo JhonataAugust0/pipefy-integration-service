@@ -18,6 +18,7 @@ from typing import Annotated, AsyncGenerator, TypeAlias
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.settings import Settings, get_settings
 from app.db.session import get_db
 from app.services.cliente_service import ClienteService
 from app.services.webhook_service import WebhookService
@@ -56,6 +57,7 @@ def get_webhook_service(
 
 
 # Type aliases reutilizáveis pelos routers
+SettingsDep: TypeAlias = Annotated[Settings, Depends(get_settings)]
 SessionDep: TypeAlias = Annotated[AsyncSession, Depends(get_session)]
 ClienteServiceDep: TypeAlias = Annotated[ClienteService, Depends(get_cliente_service)]
 WebhookServiceDep: TypeAlias = Annotated[WebhookService, Depends(get_webhook_service)]
